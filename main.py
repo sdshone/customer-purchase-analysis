@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 import pandas as pd
+from analysis import router as analysis_router
 from models import get_db, engine
 app = FastAPI()
 
@@ -18,3 +19,6 @@ def upload_data(file_path: str, db: Session = Depends(get_db)):
 
     data.to_sql(name='purchases', con=engine, if_exists='append', index=False)
     return {"message": "Data uploaded successfully"}
+
+# Include the imported API router
+app.include_router(analysis_router, prefix="/analysis")
