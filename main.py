@@ -3,11 +3,25 @@ from sqlalchemy.orm import Session
 import pandas as pd
 from analysis import router as analysis_router
 from models import get_db, engine
+import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
 
 @app.get("/")
 async def root():
     return {"message": "Hello, world!"}
+
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/upload_data/")
@@ -22,3 +36,7 @@ def upload_data(file_path: str, db: Session = Depends(get_db)):
 
 # Include the imported API router
 app.include_router(analysis_router, prefix="/analysis")
+
+
+if __name__ == '__main__':
+    uvicorn.run(app, port=8080, host='0.0.0.0')
